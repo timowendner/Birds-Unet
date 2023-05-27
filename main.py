@@ -21,7 +21,7 @@ from model import UNet
 def test_network(model, loader):
     model.eval()
     mse_list = []
-    for model_input, targets in loader:
+    for model_input, targets in loader.dataset:
         prediction = model(model_input)
         targets = targets.view(targets.size(0), -1)
         prediction = prediction.view(prediction.size(0), -1)
@@ -93,9 +93,9 @@ def train_network(model, config, optimizer):
 
         # save the model if enough time has passed
         if abs(time.time() - start_time) >= config.save_time or epoch == config.num_epochs - 1:
+            save_model(model, optimizer, config)
             test_error = test_network(model, test_loader)
             print(f'The test mse is: {test_error}')
-            save_model(model, optimizer, config)
             start_time = time.time()
 
     return model, config, optimizer
@@ -138,12 +138,14 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Diffusion Model')
     parser.add_argument('--train', action='store_true',
                         help='Train the model')
-    parser.add_argument('--config_path', type=str,
-                        help='Path to the configuration file')
+    # parser.add_argument('--config_path', type=str,
+    #                     help='Path to the configuration file')
     parser.add_argument('--load', action='store_true',
                         help='load a model')
     parser.add_argument('--lr', type=float, default=False,
                         help='change the learning rate')
     args = parser.parse_args()
+    args.config_path = 'config.json'
+    args.train = True
 
     main()

@@ -31,6 +31,7 @@ class BirdsDataset(Dataset):
                 # data
                 path = join(config.data_path, name, file + '.npy')
                 features = np.load(path).T
+                features = torch.tensor(features, dtype=torch.float)
 
                 # labels
                 path = join(config.data_path, name, file + '.labels.npy')
@@ -39,6 +40,7 @@ class BirdsDataset(Dataset):
                 label = np.where(count_ones > label.shape[1] / 2, 1, 0)
                 label = label * id
                 label = np.eye(7)[label].T
+                label = torch.tensor(label, dtype=torch.float)
 
                 dataset.append((features, label))
 
