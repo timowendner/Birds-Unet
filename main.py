@@ -32,6 +32,13 @@ def test_network(model, loader):
         count = np.count_nonzero(target == predictions)
         accuracy.append(count)
 
+    n_samples = len(loader.dataset)
+    random_index = int(np.random.random()*n_samples)
+    model_input, target = loader.dataset[random_index]
+    model_input = model_input.unsqueeze(0)
+    prediction = model(model_input)
+    targets = target.argmax(dim=0)
+
     # plot the predictions
     prediction = prediction[0].cpu().numpy()
     targets = targets.cpu().numpy()
@@ -62,7 +69,7 @@ def train_network(model, config, optimizer):
     train_dataset, test_dataset = random_split(
         dataset, [train_size, test_size])
     train_loader = DataLoader(train_dataset, batch_size=16, shuffle=True)
-    test_loader = DataLoader(test_dataset, batch_size=16, shuffle=False)
+    test_loader = DataLoader(test_dataset, batch_size=16, shuffle=True)
 
     # Train the model
     model.train()
@@ -151,7 +158,5 @@ if __name__ == '__main__':
     parser.add_argument('--lr', type=float, default=False,
                         help='change the learning rate')
     args = parser.parse_args()
-    # args.config_path = 'config.json'
-    # args.train = True
 
     main()
