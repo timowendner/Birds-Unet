@@ -1,0 +1,17 @@
+{
+    "model_name": "start",
+    "data_path": "dataset",
+    "model_path": "/Users/timowendner/Programming/Semester 4/Music Processing/models",
+    "output_path": "/Users/timowendner/Programming/Semester 4/Music Processing/output",
+    "data_length": 100,
+    "model_in": 548,
+    "model_out": 7,
+    "model_layers": [250, 100],
+    "model_layers_out": [100, 15],
+    "model_kernel": 3,
+    "model_scale": 2,
+    "lr": 0.001,
+    "save_time": 300,
+    "train_split": 0.8,
+    "num_epochs": 1000
+}
