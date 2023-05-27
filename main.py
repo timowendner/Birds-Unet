@@ -20,30 +20,36 @@ from model import UNet
 @torch.no_grad()
 def test_network(model, loader):
     model.eval()
-    mse_list = []
-    for model_input, targets in loader.dataset:
+    accuracy = []
+    for model_input, target in loader.dataset:
+        model_input = model_input.unsqueeze(0)
         prediction = model(model_input)
-        targets = targets.view(targets.size(0), -1)
-        prediction = prediction.view(prediction.size(0), -1)
 
-        # calculate the MSE
-        mse = F.mse_loss(prediction, targets, reduction='none')
-        mse_list.extend(mse.mean(dim=1).tolist())
+        predictions = prediction.argmax(dim=1)[0]
+        targets = target.argmax(dim=0)
+
+        # calculate the accuracy
+        count = np.count_nonzero(target == predictions)
+        accuracy.append(count)
 
     # plot the predictions
-    model_input = model_input[0, 0].cpu().numpy()
     prediction = prediction[0].cpu().numpy()
-    targets = targets[0].cpu().numpy()
+    targets = targets.cpu().numpy()
+    prediction = np.abs(prediction)
+    prediction = prediction / np.sum(prediction, axis=0)
 
+    x = np.arange(targets.shape[0])
     plt.figure(figsize=(10, 3))
-    plt.plot(model_input, label='model input')
-    plt.plot(prediction, label='prediction')
-    plt.plot(targets, label='target')
-    plt.legend()
+    bottom = np.zeros(targets.shape[0])
+    for i, row in enumerate(prediction):
+        color = ['gray' if val != i else 'green' for val in targets]
+        plt.bar(x, row, bottom=bottom, color=color, width=1)
+        bottom += row
+        plt.step(x, bottom, color='black', linewidth=1, where='post')
     plt.show()
 
-    # Calculate overall MSE
-    return sum(mse_list) / len(mse_list)
+    # Calculate overall accuracy
+    return sum(accuracy) / len(accuracy)
 
 
 def train_network(model, config, optimizer):
@@ -95,7 +101,7 @@ def train_network(model, config, optimizer):
         if abs(time.time() - start_time) >= config.save_time or epoch == config.num_epochs - 1:
             save_model(model, optimizer, config)
             test_error = test_network(model, test_loader)
-            print(f'The test mse is: {test_error}')
+            print(f'The test accuracy is: {test_error}')
             start_time = time.time()
 
     return model, config, optimizer
@@ -124,10 +130,10 @@ def main():
 
     # print the number of trainable parameters
     num_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
-    print(', '.join([
+    print(
         f'Number of trainable parameters: {num_params:,}',
         f'with epoch {config.current_epoch}',
-    ]))
+    )
 
     # train the network
     if args.train:
@@ -138,12 +144,14 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Diffusion Model')
     parser.add_argument('--train', action='store_true',
                         help='Train the model')
-    parser.add_argument('--config_path', type=str,
-                        help='Path to the configuration file')
+    # parser.add_argument('--config_path', type=str,
+    #                     help='Path to the configuration file')
     parser.add_argument('--load', action='store_true',
                         help='load a model')
     parser.add_argument('--lr', type=float, default=False,
                         help='change the learning rate')
     args = parser.parse_args()
+    args.config_path = 'config.json'
+    args.train = True
 
     main()

@@ -19,7 +19,7 @@ def save_model(model, optimizer, config):
     filepath = join(config.model_path, f"{config.model_name}_{time_now}.p")
 
     # define the config arguments to be saved
-    change_config = ("data_length", "model_layers", "model_in", "model_layers_out"
+    change_config = ("data_length", "model_layers", "model_in", "model_layers_out",
                      "model_out", "model_kernel", "model_scale", 'current_epoch')
     change_config = {arg: getattr(config, arg) for arg in change_config}
 
