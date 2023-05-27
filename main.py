@@ -144,14 +144,14 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Diffusion Model')
     parser.add_argument('--train', action='store_true',
                         help='Train the model')
-    # parser.add_argument('--config_path', type=str,
-    #                     help='Path to the configuration file')
+    parser.add_argument('--config_path', type=str,
+                        help='Path to the configuration file')
     parser.add_argument('--load', action='store_true',
                         help='load a model')
     parser.add_argument('--lr', type=float, default=False,
                         help='change the learning rate')
     args = parser.parse_args()
-    args.config_path = 'config.json'
-    args.train = True
+    # args.config_path = 'config.json'
+    # args.train = True
 
     main()
