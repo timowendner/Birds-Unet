@@ -74,6 +74,7 @@ class UNet(nn.Module):
         output.append(
             nn.Conv1d(last, config.model_out, kernel_size=kernel, padding=kernel//2))
         self.output = nn.Sequential(*output)
+        self.softmax = nn.Softmax(dim=2)
 
     def forward(self, x: Tensor) -> Tensor:
         # apply the encoder
@@ -90,4 +91,5 @@ class UNet(nn.Module):
 
         # apply the output
         x = self.output(x)
+        x = self.softmax(x)
         return x

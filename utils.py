@@ -56,7 +56,7 @@ def create_model(config, load=False, lr=False):
     model = UNet(config).to(config.device)
     model.load_state_dict(loaded['model'])
     if lr:
-        optimizer = torch.optim.Adam(model.parameters(), lr=lr)
+        optimizer = torch.optim.NLLLoss(model.parameters(), lr=lr)
     else:
         optimizer.load_state_dict(loaded['optimizer'])
 
