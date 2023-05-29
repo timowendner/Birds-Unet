@@ -91,5 +91,6 @@ class UNet(nn.Module):
 
         # apply the output
         x = self.output(x)
+        print(x.shape)
         x = self.softmax(x)
         return x
