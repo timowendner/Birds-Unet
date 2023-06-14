@@ -23,7 +23,7 @@ def test_network(model, loader):
     accuracy = []
     for model_input, target in loader.dataset:
         model_input = model_input.unsqueeze(0)
-        prediction = model(model_input)
+        prediction = model(model_input).cpu()
 
         predictions = prediction.argmax(dim=1)[0]
         targets = target.argmax(dim=0)
