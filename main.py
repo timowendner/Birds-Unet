@@ -26,7 +26,7 @@ def test_network(model, loader):
         prediction = model(model_input).cpu()
 
         predictions = prediction.argmax(dim=1)[0]
-        targets = target.argmax(dim=0)
+        targets = target.argmax(dim=0).cpu()
 
         # calculate the accuracy
         count = np.count_nonzero(target == predictions)
